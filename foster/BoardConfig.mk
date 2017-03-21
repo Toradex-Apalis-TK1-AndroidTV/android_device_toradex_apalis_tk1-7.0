@@ -75,8 +75,9 @@ USE_CUSTOM_AUDIO_POLICY := 0
 endif
 
 # Bluetooth
-BOARD_HAVE_BLUETOOTH := true
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/nvidia/foster/bluetooth
+BOARD_HAVE_BLUETOOTH := true
+BOARD_HAVE_BLUETOOTH_BCM := true
 
 # Graphics
 USE_OPENGL_RENDERER := true
