@@ -13,17 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #ifndef _BDROID_BUILDCFG_H
 #define _BDROID_BUILDCFG_H
+
 // SERVICE_CLASS:0x5A (Bit17 -Networking,Bit19 - Capturing,Bit20 -Object Transfer,Bit22 -Telephony)
 // MAJOR CLASS: COMPUTER
 // MINOR CLASS: TABLET
 #define BTA_DM_COD {0x5A, 0x01, 0x10}
+
 // SERVICE_CLASS:0x20 (Bit18 - Rendering)
 // MAJOR CLASS: AUDIO/VIDEO
 // MINOR CLASS: set top box
 #define BTA_DM_COD_ATV {0x20, BTM_COD_MAJOR_AUDIO, BTM_COD_MINOR_SET_TOP_BOX}
+
+#define BTIF_HF_WBS_PREFERRED TRUE
+#define BTM_WBS_INCLUDED TRUE
 #define BLE_VND_INCLUDED TRUE
-#define BTIF_HF_SERVICES (BTA_HSP_SERVICE_MASK)
-#define BTIF_HF_SERVICE_NAMES  { BTIF_HSAG_SERVICE_NAME }
+
+// Enable 1MB memory snoop logging
+#define BTSNOOP_MEM_BUFFER_SIZE (1024 * 1024)
+#define DEBUG_FS_UART_PATH "/sys/kernel/debug/70006300.serial/tty_buffer_count"
+
+// To sync with CONN TIMEOUT of pepper
+#define BTM_BLE_CONN_TIMEOUT_DEF 1000
+
+// Increase MAX GATT notification to 40
+#define BTA_GATTC_NOTIF_REG_MAX 40
+
 #endif
