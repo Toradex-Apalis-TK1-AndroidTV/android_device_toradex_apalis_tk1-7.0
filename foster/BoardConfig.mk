@@ -75,7 +75,8 @@ USE_CUSTOM_AUDIO_POLICY := 0
 endif
 
 # Bluetooth
-BOARD_HAVE_BLUETOOTH := false
+BOARD_HAVE_BLUETOOTH := true
+BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/nvidia/foster/bluetooth
 
 # Graphics
 USE_OPENGL_RENDERER := true
@@ -92,13 +93,16 @@ MAX_EGL_CACHE_ENTRY_SIZE := 262144
 TARGET_RECOVERY_FSTAB := device/nvidia/foster/initfiles/fstab.tegra
 
 # Wifi related defines
-BOARD_WLAN_DEVICE := pcie
-CONFIG_CTRL_IFACE := y
-WPA_SUPPLICANT_VERSION := VER_0_8_X
-BOARD_HOSTAPD_DRIVER := NL80211
+WPA_SUPPLICANT_VERSION      := VER_0_8_X
+BOARD_WLAN_DEVICE           := bcmdhd
 BOARD_WPA_SUPPLICANT_DRIVER := NL80211
-BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_pcie
-BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_pcie
+BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_$(BOARD_WLAN_DEVICE)
+BOARD_HOSTAPD_DRIVER        := NL80211
+BOARD_HOSTAPD_PRIVATE_LIB   := lib_driver_cmd_$(BOARD_WLAN_DEVICE)
+WIFI_DRIVER_FW_PATH_PARAM   := "/sys/module/bcmdhd/parameters/firmware_path"
+WIFI_DRIVER_FW_PATH_AP      := "/vendor/firmware/fw_bcmdhd_apsta.bin"
+WIFI_DRIVER_FW_PATH_STA     := "/vendor/firmware/fw_bcmdhd.bin"
+WIFI_BUS := PCIE
 
 #BOARD_HARDWARE_CLASS := device/nvidia/shieldtablet/cmhw/
 

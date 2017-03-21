@@ -118,8 +118,9 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/comms/gps.conf:system/etc/gps.conf
 
 # Bluetooth
+# BT FW
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/comms/bt_vendor.conf:system/etc/bluetooth/bt_vendor.conf
+    device/nvidia/foster/bluetooth/BCM4356A2_001.003.015.0077.0214_ORC.hcd:$(TARGET_COPY_OUT_VENDOR)/firmware/bcm4354A2.hcd
 
 # Camera
 PRODUCT_COPY_FILES += \
