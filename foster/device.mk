@@ -41,7 +41,9 @@ $(call inherit-product, frameworks/native/build/tablet-10in-xhdpi-2048-dalvik-he
 
 $(call inherit-product-if-exists, vendor/nvidia/shieldtablet/shieldtablet-vendor.mk)
 
-# PRODUCT_SYSTEM_PROPERTY_BLACKLIST := ro.product.name
+# Boot Animation
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/bootanimation.zip:system/media/bootanimation.zip
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/keylayouts/tegra-kbc.kl:system/usr/keylayout/tegra-kbc.kl \
@@ -49,9 +51,8 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/keylayouts/AliTV_Remote_V1_Airmouse.kl:system/usr/keylayout/AliTV_Remote_V1_Airmouse.kl \
     $(LOCAL_PATH)/keylayouts/AliTV_Remote_V1_Airmouse.idc:system/usr/idc/AliTV_Remote_V1_Airmouse.idc
 
-# set default USB configuration
-PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
-    persist.sys.usb.config=mtp
+# Set default USB interface
+PRODUCT_DEFAULT_PROPERTY_OVERRIDES += persist.sys.usb.config=mtp
 
 # TV Overlay
 DEVICE_PACKAGE_OVERLAYS += \
@@ -119,8 +120,8 @@ PRODUCT_COPY_FILES += \
 
 # Bluetooth
 # BT FW
-PRODUCT_COPY_FILES += \
-    device/nvidia/foster/bluetooth/BCM4356A2_001.003.015.0077.0214_ORC.hcd:$(TARGET_COPY_OUT_VENDOR)/firmware/bcm4354A2.hcd
+# PRODUCT_COPY_FILES += \
+#    device/nvidia/foster/bluetooth/BCM4356A2_001.003.015.0077.0214_ORC.hcd:$(TARGET_COPY_OUT_VENDOR)/firmware/bcm4354A2.hcd
 
 # Camera
 PRODUCT_COPY_FILES += \
@@ -172,11 +173,45 @@ PRODUCT_PACKAGES += \
     charger \
     charger_res_images
 
+#enable Widevine drm
+PRODUCT_PROPERTY_OVERRIDES += drm.service.enabled=true
+PRODUCT_PACKAGES += \
+    com.google.widevine.software.drm.xml \
+    com.google.widevine.software.drm \
+    libdrmwvmplugin \
+    libwvm \
+    libWVStreamControlAPI_L1 \
+    libwvdrm_L1
+
+#enable Widevine drm
+PRODUCT_PROPERTY_OVERRIDES += drm.service.enabled=true
+PRODUCT_PACKAGES += \
+    liboemcrypto \
+    libdrmdecrypt
+
 # Radio Interface
 PRODUCT_PACKAGES += rild
 
+# Paragon filesystem solution binaries
+PRODUCT_PACKAGES += \
+    mountufsd \
+    chkufsd \
+    mkexfat \
+    chkexfat \
+    mkhfs \
+    chkhfs \
+    mkntfs \
+    chkntfs
+
 # Power
 PRODUCT_PACKAGES += power.tegra
+
+PRODUCT_RUNTIMES := runtime_libart_default
+
+PRODUCT_PACKAGES += \
+    gpload \
+    ctload \
+    c2debugger
 
 # Compatibility
 PRODUCT_PACKAGES += libshim_icu55 \

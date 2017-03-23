@@ -16,7 +16,37 @@
 
 -include device/nvidia/shield-common/BoardConfigCommon.mk
 
-TARGET_SPECIFIC_HEADER_PATH := device/nvidia/shieldtablet/include
+TARGET_RELEASETOOLS_EXTENSIONS := device/nvidia/common
+
+ifeq ($(SECURE_OS_BUILD),tlk)
+    # enable secure HDCP for secure OS build
+	BOARD_VENDOR_HDCP_ENABLED ?= true
+	BOARD_ENABLE_SECURE_HDCP ?= 1
+	BOARD_VENDOR_HDCP_PATH ?= vendor/nvidia/tegra/tests-partner/hdcp
+endif
+
+NV_BUILD_GL_SUPPORT ?= 0
+# EGL_OPENGL_API support requires Android modifications only present in
+# the NV and Generic Soc branches of Android.
+ifeq ($(NV_ANDROID_FRAMEWORK_ENHANCEMENTS),TRUE)
+NV_BUILD_GL_SUPPORT := 1
+endif
+ifeq ($(NV_GENERIC_SOC),1)
+NV_BUILD_GL_SUPPORT := 1
+endif
+ifeq ($(NV_EXPOSE_GLES_ONLY),true)
+NV_BUILD_GL_SUPPORT := 0
+endif
+
+# If full OpenGL is built into the OS, then export the
+# feature tag to Android, so that apps can filter on the
+# feature in the Play Store
+ifeq ($(NV_BUILD_GL_SUPPORT),1)
+PRODUCT_COPY_FILES += \
+    device/nvidia/common/com.nvidia.feature.opengl4.xml:system/etc/permissions/com.nvidia.feature.opengl4.xml
+endif
+
+BOARD_REMOVES_RESTRICTED_CODEC := false
 
 # CPU options
 TARGET_CPU_ABI := armeabi-v7a
@@ -75,35 +105,65 @@ USE_CUSTOM_AUDIO_POLICY := 0
 endif
 
 # Bluetooth
-BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/nvidia/foster/bluetooth
-BOARD_HAVE_BLUETOOTH := true
-BOARD_HAVE_BLUETOOTH_BCM := true
-
-# Graphics
-USE_OPENGL_RENDERER := true
-BOARD_DISABLE_TRIPLE_BUFFERED_DISPLAY_SURFACES := true
+# BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/nvidia/foster/bluetooth
+BOARD_HAVE_BLUETOOTH := false
+# BOARD_HAVE_BLUETOOTH_BCM := true
 
 # Include an expanded selection of fonts
 EXTENDED_FONT_FOOTPRINT := true
 
 # Per-application sizes for shader cache
-MAX_EGL_CACHE_SIZE := 4194304
+MAX_EGL_CACHE_SIZE := 128450560
 MAX_EGL_CACHE_ENTRY_SIZE := 262144
+
+# GPU/EMC boosting for hwcomposer yuv packing
+HWC_YUV_PACKING_CPU_FREQ_MIN := -1
+HWC_YUV_PACKING_CPU_FREQ_MAX := -1
+HWC_YUV_PACKING_CPU_FREQ_PRIORITY := 15
+HWC_YUV_PACKING_GPU_FREQ_MIN := 691200
+HWC_YUV_PACKING_GPU_FREQ_MAX := 998400
+HWC_YUV_PACKING_GPU_FREQ_PRIORITY := 15
+HWC_YUV_PACKING_EMC_FREQ_MIN := 106560
+
+# GPU/EMC floor for glcomposer composition
+HWC_GLCOMPOSER_CPU_FREQ_MIN := -1
+HWC_GLCOMPOSER_CPU_FREQ_MAX := -1
+HWC_GLCOMPOSER_CPU_FREQ_PRIORITY := 15
+HWC_GLCOMPOSER_GPU_FREQ_MIN := 614400
+HWC_GLCOMPOSER_GPU_FREQ_MAX := 998400
+HWC_GLCOMPOSER_GPU_FREQ_PRIORITY := 15
+HWC_GLCOMPOSER_EMC_FREQ_MIN := 4080
+
+USE_E2FSPROGS := true
+USE_OPENGL_RENDERER := true
+
+# Allow this variable to be overridden to n for non-secure OS build
+SECURE_OS_BUILD ?= y
+ifeq ($(SECURE_OS_BUILD),y)
+    SECURE_OS_BUILD := tlk
+endif
+
+# Uncomment below line to use Nvidia's GPU-accelerated RS driver by default
+# OVERRIDE_RS_DRIVER := libnvRSDriver.so
+
+# BOARD_WIDEVINE_OEMCRYPTO_LEVEL
+# The security level of the content protection provided by the Widevine DRM plugin depends
+# on the security capabilities of the underlying hardware platform.
+# There are Level 1/2/3. To run HD contents, should be Widevine level 1 security.
+BOARD_WIDEVINE_OEMCRYPTO_LEVEL := 1
 
 # Recovery
 TARGET_RECOVERY_FSTAB := device/nvidia/foster/initfiles/fstab.tegra
 
 # Wifi related defines
-WPA_SUPPLICANT_VERSION      := VER_0_8_X
-BOARD_WLAN_DEVICE           := bcmdhd
+BOARD_WLAN_DEVICE := pcie
+CONFIG_CTRL_IFACE := y
+WPA_SUPPLICANT_VERSION := VER_0_8_X
+BOARD_HOSTAPD_DRIVER := NL80211
 BOARD_WPA_SUPPLICANT_DRIVER := NL80211
-BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_$(BOARD_WLAN_DEVICE)
-BOARD_HOSTAPD_DRIVER        := NL80211
-BOARD_HOSTAPD_PRIVATE_LIB   := lib_driver_cmd_$(BOARD_WLAN_DEVICE)
-WIFI_DRIVER_FW_PATH_PARAM   := "/sys/module/bcmdhd/parameters/firmware_path"
-WIFI_DRIVER_FW_PATH_AP      := "/vendor/firmware/fw_bcmdhd_apsta.bin"
-WIFI_DRIVER_FW_PATH_STA     := "/vendor/firmware/fw_bcmdhd.bin"
-WIFI_BUS := PCIE
+BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_pcie
+BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_pcie
+#WIFI_BUS := PCIE
 
 #BOARD_HARDWARE_CLASS := device/nvidia/shieldtablet/cmhw/
 
